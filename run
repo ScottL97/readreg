@@ -1,0 +1,8 @@
+#!/bin/sh
+# Read register value
+
+make clean 2>&1 1>/dev/null
+make 2>&1 1>/dev/null
+rmmod reg 2>/dev/null
+insmod reg.ko
+./app
