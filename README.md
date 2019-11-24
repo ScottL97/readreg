@@ -1,3 +1,5 @@
-Read register
-reg.c - driver
-reguser.c - user mode
+Read registers' values
+
+reg.c -> reg.ko
+
+reguser.c - user app
