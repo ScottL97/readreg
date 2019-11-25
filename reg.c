@@ -25,7 +25,7 @@ static long readreg_ioctl(struct file *filp, unsigned int cmd, unsigned long arg
 {
 	int ret;
 	struct ioctl_data data;
-	//static void __iomem *vaddr;
+	static void __iomem *vaddr;
 	/* 检查设备类型 */
     if (_IOC_TYPE(cmd) != IOC_MAGIC) {
         pr_err("[%s] command type [%c] error!\n", \
@@ -47,15 +47,17 @@ static long readreg_ioctl(struct file *filp, unsigned int cmd, unsigned long arg
 		case READREG:
 		{
     		//将I/O内存资源的物理地址映射到核心虚地址空间中，映射0x200的大小
-    		//vaddr = ioremap_nocache(0x80028780000 + data.ch * 0x10000, 0x200);
-    		//io_write_32(vaddr + 0x0, data.address | (0x1 << 28));
-    		//uint32_t val = io_read_32(vaddr + 0x8);    
-    		data.val = 0x123456;
-			printk(KERN_INFO "reg ch=%d,address=0x%x",data.ch,data.address);
-    		printk(KERN_INFO "0x%x", data.val);
+    		vaddr = ioremap(0x80028780000 + data.ch * 0x10000, 0x200);
+    		io_write_32(vaddr + 0x0, data.address | (0x1 << 28));
+    		//io_write_32(vaddr + 0x0, 0x30);
+    		//io_write_32(vaddr + 0x8, 0x200|0x100|0x1);
+    		data.val = io_read_32(vaddr + 0x8);
+    		//data.val = 0x123456;
+		//printk(KERN_INFO "reg ch=%d,address=0x%x",data.ch,data.address);
+    		//printk(KERN_INFO "0x%x", data.val);
 			ret = copy_to_user((struct ioctl_data __user *)arg, \
                 &data, sizeof(struct ioctl_data));
-			//iounmap(vaddr);
+			iounmap(vaddr);
         	if (ret) 
             	return -EFAULT;
 		}	break;
