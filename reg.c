@@ -43,24 +43,24 @@ static long readreg_ioctl(struct file *filp, unsigned int cmd, unsigned long arg
 	if(copy_from_user(&data, (struct ioctl_data *)arg, sizeof(struct ioctl_data))) {
 		return -EFAULT;
 	}
-	switch(cmd) {
+	switch(cmd) { 
 		case READREG:
 		{
-    		//将I/O内存资源的物理地址映射到核心虚地址空间中，映射0x200的大小
-    		vaddr = ioremap(0x80028780000 + data.ch * 0x10000, 0x200);
-    		io_write_32(vaddr + 0x0, data.address | (0x1 << 28));
-    		//io_write_32(vaddr + 0x0, 0x30);
-    		//io_write_32(vaddr + 0x8, 0x200|0x100|0x1);
-    		data.val = io_read_32(vaddr + 0x8);
-    		//data.val = 0x123456;
-		//printk(KERN_INFO "reg ch=%d,address=0x%x",data.ch,data.address);
-    		//printk(KERN_INFO "0x%x", data.val);
+    		//将I/O内存资源的物理地址映射到核心虚地址空间中，映射4字节的大小
+    		vaddr = ioremap(0x80028780000 + data.ch * 0x10000 + data.offset, 4);
+    		data.rval = io_read_32(vaddr); //offset = 0x8
+			iounmap(vaddr);
 			ret = copy_to_user((struct ioctl_data __user *)arg, \
                 &data, sizeof(struct ioctl_data));
-			iounmap(vaddr);
         	if (ret) 
             	return -EFAULT;
 		}	break;
+		case WRITEREG:
+		{
+    		vaddr = ioremap(0x80028780000 + data.ch * 0x10000 + data.offset, 4);
+			io_write_32(vaddr, data.wval);
+			iounmap(vaddr);
+		}
 		default:
 			return -ENOTTY;
 	}
@@ -73,7 +73,7 @@ static struct file_operations ops = {
 static struct miscdevice tmp_dev =
 {
 	.minor = MISC_DYNAMIC_MINOR,
-	.name = "read_reg",
+	.name = "read_temp",
 	.fops = &ops,
 };
 

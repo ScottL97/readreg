@@ -6,13 +6,15 @@
 
 struct ioctl_data {
 	uint8_t ch;
-	uint32_t address;
-	uint32_t val;	
+	uint32_t wval;
+	uint32_t rval;	
+	uint32_t offset;
 };
 
 #define IOC_MAGIC 'c'
 //#define _IOR(type,nr,size)	_IOC(_IOC_READ,(type),(nr),sizeof(size))
 #define READREG _IOWR(IOC_MAGIC,0,struct ioctl_data)
+#define WRITEREG _IOW(IOC_MAGIC,1,struct ioctl_data)
 #define IOC_MAXNR 2
 
 #endif
