@@ -60,7 +60,7 @@ static long readreg_ioctl(struct file *filp, unsigned int cmd, unsigned long arg
     		vaddr = ioremap(0x80028780000 + data.ch * 0x10000 + data.offset, 4);
 			io_write_32(vaddr, data.wval);
 			iounmap(vaddr);
-		}
+		}   break;
 		default:
 			return -ENOTTY;
 	}

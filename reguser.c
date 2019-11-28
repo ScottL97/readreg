@@ -41,7 +41,7 @@ int main(void)
 		}
 		reg_low = userdata.rval&0xfff;
 		temp = reg_low*0.0489-40.0+0.625;
-		printf("ch: %d, temp: %lf", ch, temp);
+		printf("ch: %d, temp: %lf\n", ch, temp);
 	}
 	close(fd);
 }
