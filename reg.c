@@ -73,7 +73,7 @@ static struct file_operations ops = {
 static struct miscdevice tmp_dev =
 {
 	.minor = MISC_DYNAMIC_MINOR,
-	.name = "read_temp",
+	.name = "read_i350",
 	.fops = &ops,
 };
 

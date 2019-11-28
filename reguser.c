@@ -16,33 +16,18 @@ int main(void)
 	uint32_t reg_low = 0;
 	double temp = 0;
 
-	fd = open("/dev/read_temp", O_RDWR);
+	fd = open("/dev/read_i350", O_RDWR);
     if (fd < 0) {
         perror("open");
         exit(-2);
     }
-	for(; ch < 8; ch++)
+	//write_reg(0, 0x9d, 0xff);
+	if(read_reg(0) != 0)
 	{
-		write_reg(ch, 0, 0x30);
-		write_reg(ch, 0x8, 0x200|0x100|0x1);
-		write_reg(ch, 0x8, 0x200|0x1);
-		if(read_reg(ch) != 0)
-		{
-			printf("Read temp failed");			
-			return -1;
-		}
-		write_reg(ch, 0x8, 0x400|0x200|0x1);
-		write_reg(ch, 0x8, 0x200|0x1);
-		write_reg(ch, 0, 0x110);
-		if(read_reg(ch) != 0)
-		{
-			printf("Read temp failed");			
-			return -1;
-		}
-		reg_low = userdata.rval&0xfff;
-		temp = reg_low*0.0489-40.0+0.625;
-		printf("ch: %d, temp: %lf\n", ch, temp);
+		printf("Read i350 failed");			
+		return -1;
 	}
+	printf("value: %x\n", userdata.rval);
 	close(fd);
 }
 static int write_reg(uint8_t ch, uint32_t offset, uint32_t wval)
@@ -53,7 +38,7 @@ static int write_reg(uint8_t ch, uint32_t offset, uint32_t wval)
 	userdata.wval = wval;
 	int ret = ioctl(fd,WRITEREG,&userdata);
     if (ret) {
-        perror("ioctl wrong");
+        perror("ioctl write wrong");
         return -1;
     }
 	return 0;
@@ -62,11 +47,11 @@ static int read_reg(uint8_t ch)
 {
 	userdata.ch = ch;
 	userdata.rval = 0;
-	userdata.offset = 0x8;	
+	userdata.offset = 0x9d;	
 	userdata.wval = 0;
 	int ret = ioctl(fd,READREG,&userdata);
     if (ret) {
-        perror("ioctl wrong");
+        perror("ioctl read wrong");
         return -1;
     }
 	return 0;
