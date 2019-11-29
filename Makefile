@@ -1,4 +1,4 @@
-obj-m += reg.o
+obj-m += i350.o
 CURRENT_PATH := $(shell pwd)
 LINUX_KERNEL := $(shell uname -r)
 LINUX_KERNEL_PATH := /root/linux-4.18
